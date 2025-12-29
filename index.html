@@ -3,963 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yomu API - Deployment Dokümantasyonu</title>
+    <title>Jenkins Deployment Dokümantasyonu</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .landing-container {
+            min-height: 100vh;
+            background: #0f172a;
+            padding: 2rem;
+        }
+
+        .landing-header {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            text-align: center;
+        }
+
+        .landing-header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .landing-subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .deployment-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto 3rem;
+        }
+
+        .deployment-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .deployment-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #334155;
+            border-radius: 6px;
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .card-project {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-left: auto;
+        }
+
+        .card-desc {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card-features li {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            padding: 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-features li::before {
+            content: "→";
+            color: #3b82f6;
+        }
+
+        .comparison-section {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .comparison-title {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .comparison-table {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comp-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #334155;
+        }
+
+        .comp-row:last-child {
+            border-bottom: none;
+        }
+
+        .comp-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .comp-value {
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .comp-header {
+            background: #0f172a;
+            font-weight: 600;
+        }
+
+        .landing-footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.8rem;
+            padding-top: 2rem;
+            border-top: 1px solid #1e293b;
+        }
+    </style>
 </head>
 <body>
-    <div class="app">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <span class="logo-icon">Y</span>
-                    <span>Yomu API</span>
-                </div>
-                <p class="subtitle">Deployment & Altyapı Dokümantasyonu</p>
-            </div>
+    <div class="landing-container">
+        <header class="landing-header">
+            <h1>Jenkins Deployment Dokümantasyonu</h1>
+            <p class="landing-subtitle">Deployment stratejinizi seçin</p>
+        </header>
 
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <div class="nav-section-title">Başlangıç</div>
-                    <a href="#hero" class="nav-item active">
-                        <span class="icon">🏠</span>
-                        <span>Giriş</span>
-                    </a>
-                    <a href="#pipeline" class="nav-item">
-                        <span class="icon">⚙️</span>
-                        <span>Pipeline Mantığı</span>
-                    </a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Gereksinimler</div>
-                    <a href="#prerequisites" class="nav-item">
-                        <span class="icon">📋</span>
-                        <span>Ön Gereksinimler</span>
-                    </a>
-                    <a href="#aws-config" class="nav-item">
-                        <span class="icon">☁️</span>
-                        <span>AWS Konfigürasyonu</span>
-                    </a>
-                    <a href="#iam-policies" class="nav-item">
-                        <span class="icon">🔐</span>
-                        <span>IAM Politikaları</span>
-                    </a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Detaylar</div>
-                    <a href="#pipeline-details" class="nav-item">
-                        <span class="icon">🔧</span>
-                        <span>Pipeline Detayları</span>
-                    </a>
-                    <a href="#jenkinsfile-reference" class="nav-item">
-                        <span class="icon">📄</span>
-                        <span>Jenkinsfile Referansı</span>
-                    </a>
-                    <a href="#jenkinsfile-generator" class="nav-item">
-                        <span class="icon">⚡</span>
-                        <span>Jenkinsfile Oluşturucu</span>
-                    </a>
-                    <a href="#setup-guide" class="nav-item">
-                        <span class="icon">📚</span>
-                        <span>Kurulum Rehberi</span>
-                    </a>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Destek</div>
-                    <a href="#troubleshooting" class="nav-item">
-                        <span class="icon">🔍</span>
-                        <span>Sorun Giderme</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- Overlay for mobile -->
-        <div class="overlay" id="overlay"></div>
-
-        <!-- Main Content -->
-        <main class="main">
-            <!-- Header -->
-            <header class="header">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <button class="menu-toggle" id="menuToggle">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12h18M3 6h18M3 18h18"/>
-                        </svg>
-                    </button>
-                    <h1 class="header-title">Deployment Dokümantasyonu</h1>
-                </div>
-                <div class="header-actions">
-                    <span style="font-size: 0.85rem; color: var(--text-muted);">v1.0.0</span>
-                </div>
-            </header>
-
-            <!-- Content -->
-            <div class="content">
-                <!-- Hero Section -->
-                <section class="hero" id="hero">
-                    <div class="hero-content">
-                        <span class="hero-badge">
-                            <span>🚀</span>
-                            CI/CD Pipeline & AWS Infrastructure
-                        </span>
-                        <h1 class="hero-title">Yomu API Deployment Dokümantasyonu</h1>
-                        <p class="hero-subtitle">
-                            Bu doküman, Yomu API projesinin Jenkins CI/CD süreçlerini, AWS altyapı gereksinimlerini,
-                            gerekli izinleri ve deployment mantığını tek bir yerde toplar.
-                        </p>
+        <main class="landing-main">
+            <div class="deployment-cards">
+                <!-- Basic Deployment -->
+                <a href="basic.html" class="deployment-card">
+                    <div class="card-header">
+                        <div class="card-icon">1</div>
+                        <h2 class="card-title">Basic Deployment</h2>
+                        <span class="card-project">Yomu API</span>
                     </div>
-                </section>
-
-                <!-- Pipeline Overview -->
-                <section class="section" id="pipeline">
-                    <h2 class="section-title">
-                        <span class="number">1</span>
-                        Pipeline Çalışma Mantığı
-                    </h2>
-                    <div class="section-content">
-                        <p>Bu pipeline, Jenkins üzerinde çalışır ve AWS altyapısıyla (EC2, SSM, CloudWatch) entegre bir şekilde deployment yapar. Süreç şu adımlardan oluşur:</p>
-
-                        <div class="pipeline-steps">
-                            <div class="pipeline-step">
-                                <span class="step-number">1</span>
-                                <div class="step-content">
-                                    <div class="step-title">Checkout</div>
-                                    <div class="step-desc">Kodun en güncel hali Git deposundan çekilir.</div>
-                                </div>
-                            </div>
-                            <div class="pipeline-step">
-                                <span class="step-number">2</span>
-                                <div class="step-content">
-                                    <div class="step-title">Build & Push</div>
-                                    <div class="step-desc">Docker imajı oluşturulur ve Docker Hub'a gönderilir.</div>
-                                </div>
-                            </div>
-                            <div class="pipeline-step">
-                                <span class="step-number">3</span>
-                                <div class="step-content">
-                                    <div class="step-title">Config Fetching</div>
-                                    <div class="step-desc">AWS SSM Parameter Store'dan şifreli çevre değişkenleri (.env) ve sunucu IP bilgileri çekilir.</div>
-                                </div>
-                            </div>
-                            <div class="pipeline-step">
-                                <span class="step-number">4</span>
-                                <div class="step-content">
-                                    <div class="step-title">Logging Config</div>
-                                    <div class="step-desc">Docker konteyner loglarını AWS CloudWatch'a aktarmak için dinamik bir konfigürasyon oluşturulur.</div>
-                                </div>
-                            </div>
-                            <div class="pipeline-step">
-                                <span class="step-number">5</span>
-                                <div class="step-content">
-                                    <div class="step-title">File Transfer (SCP)</div>
-                                    <div class="step-desc">.env, docker-compose.prod.yml, gunicorn_conf.py ve CloudWatch ayarları hedef sunucuya kopyalanır.</div>
-                                </div>
-                            </div>
-                            <div class="pipeline-step">
-                                <span class="step-number">6</span>
-                                <div class="step-content">
-                                    <div class="step-title">Deployment (SSH)</div>
-                                    <div class="step-desc">Hedef sunucuda servisler yeniden başlatılır ve CloudWatch ajanı konfigüre edilir.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Prerequisites -->
-                <section class="section" id="prerequisites">
-                    <h2 class="section-title">
-                        <span class="number">2</span>
-                        Ön Gereksinimler
-                    </h2>
-                    <div class="section-content">
-                        <p>Pipeline'ın çalışabilmesi için Jenkins Agent ve Hedef Sunucu üzerinde aşağıdaki araçların kurulu olması gerekir.</p>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">A. Jenkins Sunucusu Gereksinimleri</h3>
-                            <p>Jenkins'in <span class="code-inline">sh</span> komutlarını işleyebilmesi için sunucuda şunlar yüklü olmalıdır:</p>
-
-                            <div class="feature-grid">
-                                <div class="feature-card">
-                                    <div class="feature-card-icon">🐳</div>
-                                    <h4 class="feature-card-title">Docker</h4>
-                                    <p class="feature-card-content">İmaj build işlemleri için</p>
-                                </div>
-                                <div class="feature-card">
-                                    <div class="feature-card-icon">🔶</div>
-                                    <h4 class="feature-card-title">AWS CLI v2</h4>
-                                    <p class="feature-card-content">SSM servisinden veri çekmek için</p>
-                                </div>
-                                <div class="feature-card">
-                                    <div class="feature-card-icon">📟</div>
-                                    <h4 class="feature-card-title">jq</h4>
-                                    <p class="feature-card-content">AWS'den dönen JSON verisini parse etmek için</p>
-                                </div>
-                                <div class="feature-card">
-                                    <div class="feature-card-icon">🔑</div>
-                                    <h4 class="feature-card-title">OpenSSH Client</h4>
-                                    <p class="feature-card-content">ssh ve scp komutları için</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">B. Jenkins Credentials Tanımları</h3>
-                            <p>Jenkins panelinde aşağıdaki kimlik bilgileri oluşturulmalıdır:</p>
-
-                            <div class="table-container">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Credential ID</th>
-                                            <th>Tür</th>
-                                            <th>Açıklama</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><code>dockerhub-credentials</code></td>
-                                            <td>Username with Password</td>
-                                            <td>Docker Hub'a imaj pushlamak için kullanıcı adı/şifre</td>
-                                        </tr>
-                                        <tr>
-                                            <td><code>deploy-server-ssh-key</code></td>
-                                            <td>SSH Username with private key</td>
-                                            <td>EC2 sunucusuna SSH bağlantısı için .pem anahtarı</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- AWS Configuration -->
-                <section class="section" id="aws-config">
-                    <h2 class="section-title">
-                        <span class="number">3</span>
-                        AWS Altyapı Konfigürasyonu
-                    </h2>
-                    <div class="section-content">
-                        <div class="info-card">
-                            <div class="info-card-title">
-                                <span>ℹ️</span>
-                                SSM Parameter Store
-                            </div>
-                            <p class="info-card-content">
-                                Proje, hard-coded config dosyaları yerine AWS Systems Manager (SSM) kullanır.
-                                AWS Console üzerinden aşağıdaki parametrelerin oluşturulmuş olması zorunludur.
-                            </p>
-                        </div>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">
-                                <span class="badge">Secure</span>
-                                /yomu/prod/ Altındaki Değişkenler
-                            </h3>
-                            <p>Bu yolun altındaki her şey otomatik olarak çekilip .env dosyasına yazılır:</p>
-
-                            <div class="param-list">
-                                <div class="param-item">
-                                    <span class="param-path">/yomu/prod/DB_PASSWORD</span>
-                                    <span class="param-type secure">SecureString</span>
-                                </div>
-                                <div class="param-item">
-                                    <span class="param-path">/yomu/prod/SECRET_KEY</span>
-                                    <span class="param-type secure">SecureString</span>
-                                </div>
-                                <div class="param-item">
-                                    <span class="param-path">/yomu/prod/ANY_OTHER_VAR</span>
-                                    <span class="param-type secure">SecureString</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">
-                                <span class="badge">Config</span>
-                                /yomu/config/ Altındaki Değişkenler
-                            </h3>
-                            <p>Deployment hedefi ve genel ayarlar burada tutulur:</p>
-
-                            <div class="param-list">
-                                <div class="param-item">
-                                    <span class="param-path">CLOUDFRONT_DOMAIN</span>
-                                    <span class="param-type string">String</span>
-                                </div>
-                                <div class="param-item">
-                                    <span class="param-path">CLOUDFRONT_KEY_ID</span>
-                                    <span class="param-type string">String</span>
-                                </div>
-                                <div class="param-item">
-                                    <span class="param-path">YOMU_SERVER_IP</span>
-                                    <span class="param-type string">String</span>
-                                </div>
-                                <div class="param-item">
-                                    <span class="param-path">YOMU_SERVER_USER</span>
-                                    <span class="param-type string">String</span>
-                                </div>
-                            </div>
-
-                            <div class="info-card warning">
-                                <div class="info-card-title">
-                                    <span>⚠️</span>
-                                    Önemli Not
-                                </div>
-                                <p class="info-card-content">
-                                    YOMU_SERVER_IP parametresi, deployment yapılacak sunucunun IP adresini içermelidir.
-                                    Bu değer, SCP ve SSH işlemlerinde hedef sunucu olarak kullanılır.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- IAM Policies -->
-                <section class="section" id="iam-policies">
-                    <h2 class="section-title">
-                        <span class="number">4</span>
-                        Gerekli AWS IAM Politikaları
-                    </h2>
-                    <div class="section-content">
-                        <p>Sistemin çalışması için iki farklı IAM politikasına ihtiyaç vardır. Biri Jenkins sunucusu için, diğeri uygulamanın çalıştığı EC2 sunucusu için.</p>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">A. Jenkins Sunucusu IAM Politikası</h3>
-                            <div class="info-card">
-                                <div class="info-card-title">
-                                    <span>🎯</span>
-                                    Kime atanmalı
-                                </div>
-                                <p class="info-card-content">
-                                    Jenkins'in çalıştığı sunucunun IAM Role'üne veya Jenkins AWS kullanıcısına.
-                                </p>
-                            </div>
-                            <p><strong>Amacı:</strong> SSM üzerinden parametreleri okumak ve şifreli verileri çözmek.</p>
-
-                            <div class="code-block" data-lang="JSON">
-<pre><code>{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllowReadingSSMParams",
-            "Effect": "Allow",
-            "Action": [
-                "ssm:GetParametersByPath",
-                "ssm:GetParameter",
-                "ssm:GetParameters"
-            ],
-            "Resource": [
-                "arn:aws:ssm:eu-central-1:*:parameter/yomu/*"
-            ]
-        },
-        {
-            "Sid": "AllowDecryptingSecureStrings",
-            "Effect": "Allow",
-            "Action": [
-                "kms:Decrypt"
-            ],
-            "Resource": "arn:aws:kms:eu-central-1:*:key/YOUR_KMS_KEY_ID"
-        }
-    ]
-}</code></pre>
-                            </div>
-
-                            <div class="info-card success">
-                                <div class="info-card-title">
-                                    <span>💡</span>
-                                    Not
-                                </div>
-                                <p class="info-card-content">
-                                    Eğer AWS Managed Key kullanıyorsanız KMS kısmına gerek kalmayabilir,
-                                    ancak SecureString kullanıldığı için genelde gereklidir.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">B. Hedef Sunucu (EC2) IAM Politikası</h3>
-                            <div class="info-card">
-                                <div class="info-card-title">
-                                    <span>🎯</span>
-                                    Kime atanmalı
-                                </div>
-                                <p class="info-card-content">
-                                    Uygulamanın çalıştığı (Deploy edilen) EC2 sunucusunun IAM Role'üne.
-                                </p>
-                            </div>
-                            <p><strong>Amacı:</strong> Docker loglarını CloudWatch'a göndermek ve metrik toplamak.</p>
-
-                            <div class="code-block" data-lang="JSON">
-<pre><code>{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "CloudWatchLogsAccess",
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:DescribeLogStreams"
-            ],
-            "Resource": [
-                "arn:aws:logs:eu-central-1:*:log-group:/yomu/docker-logs:*"
-            ]
-        },
-        {
-            "Sid": "CloudWatchMetrics",
-            "Effect": "Allow",
-            "Action": [
-                "cloudwatch:PutMetricData"
-            ],
-            "Resource": "*"
-        }
-    ]
-}</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Pipeline Details -->
-                <section class="section" id="pipeline-details">
-                    <h2 class="section-title">
-                        <span class="number">5</span>
-                        Pipeline Adım Detayları
-                    </h2>
-                    <div class="section-content">
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">.env Dosyasının Dinamik Oluşturulması</h3>
-                            <p>Pipeline içerisindeki aşağıdaki blok, JSON çıktısını .env formatına dönüştüren kritik bir işlemdir:</p>
-
-                            <div class="code-block" data-lang="Bash">
-<pre><code>aws ssm get-parameters-by-path ... --output json | \
-jq -r '.[] | "\\(.Name)=\\"\\(.Value)\\""' | \
-sed 's|/yomu/prod/||' > .env</code></pre>
-                            </div>
-
-                            <p>Bu script şunları yapar:</p>
-                            <ul>
-                                <li>SSM'den veriyi JSON olarak çeker</li>
-                                <li>jq ile JSON'u <code>ANAHTAR="DEĞER"</code> formatına çevirir</li>
-                                <li>sed ile anahtar isimlerinin başındaki yolu (<code>/yomu/prod/</code>) temizler</li>
-                            </ul>
-                        </div>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">CloudWatch Log Yapılandırması</h3>
-                            <p>Sistem, Docker konteynerlerinin loglarını <code>/var/lib/docker/containers</code> dizininden okuyarak CloudWatch üzerinde <code>/yomu/docker-logs</code> log grubuna gönderir.</p>
-
-                            <div class="info-card">
-                                <div class="info-card-title">
-                                    <span>📝</span>
-                                    Konfigürasyon Dosyası
-                                </div>
-                                <p class="info-card-content">
-                                    Bu ayar <code>cloudwatch-config.json</code> dosyası ile deploy sırasında sunucuya enjekte edilir.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Jenkinsfile Reference -->
-                <section class="section" id="jenkinsfile-reference">
-                    <h2 class="section-title">
-                        <span class="number">6</span>
-                        Jenkinsfile Referansı
-                    </h2>
-                    <div class="section-content">
-                        <p>Aşağıda, projede kullanılan tam Jenkinsfile bulunmaktadır. Bu dosyayı projenizin kök dizinine <code>Jenkinsfile</code> adıyla kaydedebilirsiniz.</p>
-
-                        <div class="info-card">
-                            <div class="info-card-title">
-                                <span>📁</span>
-                                Dosya Konumu
-                            </div>
-                            <p class="info-card-content">
-                                Jenkinsfile, projenizin kök dizininde (<code>repo/Jenkinsfile</code>) yer almalıdır.
-                                Jenkins bu dosyayı otomatik olarak algılar ve pipeline'ı çalıştırır.
-                            </p>
-                        </div>
-
-                        <div class="code-block" data-lang="Groovy/Jenkinsfile">
-<pre><code>pipeline {
-    agent any
-
-    environment {
-        DOCKER_HUB_IMAGE = "proksiyazilimdocker/yomu-api:latest"
-        DOCKER_HUB_CREDS_ID = "dockerhub-credentials"
-        SSH_CREDENTIALS_ID = "deploy-server-ssh-key"
-        AWS_REGION = "eu-central-1"
-        SSM_SECRET_PATH = "/yomu/prod/"
-        SSM_CONFIG_PATH = "/yomu/config/"
-        YOMU_APP_DIR = "/home/ec2-user/yomu-app"
-    }
-
-    stages {
-        stage('1. Checkout Code') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('2. Build & Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
-                    sh "docker build -t ${DOCKER_HUB_IMAGE} ."
-                    sh "docker push ${DOCKER_HUB_IMAGE}"
-                }
-            }
-        }
-
-        stage('3. Deploy to Server') {
-            steps {
-                script {
-                    echo "Gizli bilgileri (.env) AWS SSM'den çekiyorum..."
-                    sh """
-                        aws ssm get-parameters-by-path \
-                            --path "${SSM_SECRET_PATH}" \
-                            --with-decryption \
-                            --region "${AWS_REGION}" \
-                            --query "Parameters[*].{Name:Name,Value:Value}" \
-                            --output json | \
-                        jq -r '.[] | "\\(.Name)=\\"\\(.Value)\\""' | \
-                        sed 's|${SSM_SECRET_PATH}||' > .env
-
-                        CLOUDFRONT_DOMAIN=\$(aws ssm get-parameter --name "${SSM_CONFIG_PATH}CLOUDFRONT_DOMAIN" --region "${AWS_REGION}" --query 'Parameter.Value' --output text)
-                        CLOUDFRONT_KEY_ID=\$(aws ssm get-parameter --name "${SSM_CONFIG_PATH}CLOUDFRONT_KEY_ID" --region "${AWS_REGION}" --query 'Parameter.Value' --output text)
-
-                        echo "LOCAL=false" >> .env
-                        echo "CLOUDFRONT_DOMAIN=\${CLOUDFRONT_DOMAIN}" >> .env
-                        echo "CLOUDFRONT_KEY_ID=\${CLOUDFRONT_KEY_ID}" >> .env
-                    """
-
-                    echo "CloudWatch Ajan ayar dosyası (cloudwatch-config.json) oluşturuluyor..."
-                    sh """
-cat << EOF > cloudwatch-config.json
-{
-  "agent": {
-    "run_as_user": "root"
-  },
-  "logs": {
-    "logs_collected": {
-      "files": {
-        "collect_list": [
-          {
-            "file_path": "/var/lib/docker/containers/*/*-json.log",
-            "log_group_name": "/yomu/docker-logs",
-            "log_stream_name": "{instance_id}-build-${env.BUILD_NUMBER}-YomuAI",
-            "timestamp_format": "%Y-%m-%dT%H:%M:%S.%fZ",
-            "multi_line_start_pattern": "%Y-%m-%dT%H:%M:%S"
-          }
-        ]
-      }
-    },
-    "force_flush_interval": 5
-  }
-}
-EOF
-                    """
-
-                    echo "Sunucu IP ve Kullanıcı adını AWS SSM'den çekiyorum..."
-                    def serverIp = sh(
-                        script: "aws ssm get-parameter --name '${SSM_CONFIG_PATH}YOMU_SERVER_IP' --region '${AWS_REGION}' --query 'Parameter.Value' --output text",
-                        returnStdout: true
-                    ).trim()
-
-                    def serverUser = sh(
-                        script: "aws ssm get-parameter --name '${SSM_CONFIG_PATH}YOMU_SERVER_USER' --region '${AWS_REGION}' --query 'Parameter.Value' --output text",
-                        returnStdout: true
-                    ).trim()
-
-                    echo "Dosyalar ${serverUser}@${serverIp} sunucusuna kopyalanıyor..."
-
-                    withCredentials([sshUserPrivateKey(credentialsId: "${SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh "ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${serverUser}@${serverIp} 'mkdir -p ${YOMU_APP_DIR}'"
-                        sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} .env ${serverUser}@${serverIp}:${YOMU_APP_DIR}/.env"
-                        sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} docker-compose.prod.yml ${serverUser}@${serverIp}:${YOMU_APP_DIR}/docker-compose.prod.yml"
-                        sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} gunicorn_conf.py ${serverUser}@${serverIp}:${YOMU_APP_DIR}/gunicorn_conf.py"
-                        sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} cloudwatch-config.json ${serverUser}@${serverIp}:/tmp/cloudwatch-config.json"
-
-                        sh """
-                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${serverUser}@${serverIp} "
-                                echo 'CloudWatch Agent kuruluyor/güncelleniyor...'
-                                sudo yum install -y amazon-cloudwatch-agent
-
-                                echo 'CloudWatch Agent (Docker logları için) dosyadan başlatılıyor...'
-                                sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/tmp/cloudwatch-config.json -s
-
-                                cd ${YOMU_APP_DIR} && \
-                                echo 'Yeni imajı Docker Hub''dan çekiyorum (pull)...' && \
-                                docker-compose -f docker-compose.prod.yml pull && \
-                                echo 'Servisleri yeniden başlatıyorum (up -d)...' && \
-                                docker-compose -f docker-compose.prod.yml up -d --force-recreate
-                            "
-                        """
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        always {
-            echo "Geçici dosyalar Jenkins'ten siliniyor..."
-            sh 'rm -f .env cloudwatch-config.json'
-        }
-    }
-}</code></pre>
-                        </div>
-
-                        <div class="info-card success">
-                            <div class="info-card-title">
-                                <span>💡</span>
-                                Kullanım
-                            </div>
-                            <p class="info-card-content">
-                                Bu Jenkinsfile'ı projenize ekledikten sonra Jenkins'te yeni bir "Pipeline" job'u oluşturun,
-                                Git reposunu işaret edin ve "Build Now" ile çalıştırın.
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Jenkinsfile Generator -->
-                <section class="section" id="jenkinsfile-generator">
-                    <h2 class="section-title">
-                        <span class="number">7</span>
-                        Jenkinsfile Oluşturucu
-                    </h2>
-                    <div class="section-content">
-                        <p>Aşağıdaki formu doldurarak projenize özel Jenkinsfile'ı oluşturabilirsiniz. Tüm alanları doldurduktan sonra "Oluştur" butonuna tıklayın.</p>
-
-                        <div class="generator-container">
-                            <form id="jenkinsfileForm" class="generator-form">
-                                <div class="form-section">
-                                    <h4 class="form-section-title">🐳 Docker Ayarları</h4>
-                                    <div class="form-grid">
-                                        <div class="form-group">
-                                            <label for="dockerImage">Docker İmaj Adı</label>
-                                            <input type="text" id="dockerImage" name="dockerImage" placeholder="örn: username/repo:latest" value="proksiyazilimdocker/yomu-api:latest" required>
-                                            <small>Hub.docker.comdaki imaj adınız</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="dockerCredsId">Docker Hub Credential ID</label>
-                                            <input type="text" id="dockerCredsId" name="dockerCredsId" placeholder="Jenkins'teki credential ID" value="dockerhub-credentials" required>
-                                            <small>Jenkins Credentials'daki ID</small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-section">
-                                    <h4 class="form-section-title">🔐 SSH Ayarları</h4>
-                                    <div class="form-grid">
-                                        <div class="form-group">
-                                            <label for="sshCredsId">SSH Credential ID</label>
-                                            <input type="text" id="sshCredsId" name="sshCredsId" placeholder="Jenkins'teki credential ID" value="deploy-server-ssh-key" required>
-                                            <small>Jenkins Credentials'daki SSH key ID</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="appDir">Uygulama Dizini (Sunucuda)</label>
-                                            <input type="text" id="appDir" name="appDir" placeholder="örn: /home/ec2-user/yomu-app" value="/home/ec2-user/yomu-app" required>
-                                            <small>Deploy yapılacak hedef dizin</small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-section">
-                                    <h4 class="form-section-title">☁️ AWS Ayarları</h4>
-                                    <div class="form-grid">
-                                        <div class="form-group">
-                                            <label for="awsRegion">AWS Bölgesi</label>
-                                            <select id="awsRegion" name="awsRegion">
-                                                <option value="eu-central-1" selected>eu-central-1 (Frankfurt)</option>
-                                                <option value="eu-west-1">eu-west-1 (Ireland)</option>
-                                                <option value="eu-west-2">eu-west-2 (London)</option>
-                                                <option value="us-east-1">us-east-1 (N. Virginia)</option>
-                                                <option value="us-west-2">us-west-2 (Oregon)</option>
-                                                <option value="ap-northeast-1">ap-northeast-1 (Tokyo)</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="ssmSecretPath">SSM Secret Path</label>
-                                            <input type="text" id="ssmSecretPath" name="ssmSecretPath" placeholder="/yomu/prod" value="/yomu/prod" required>
-                                            <small>SecureString parametrelerin yolu (sonuna / eklenmez)</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="ssmConfigPath">SSM Config Path</label>
-                                            <input type="text" id="ssmConfigPath" name="ssmConfigPath" placeholder="/yomu/config" value="/yomu/config" required>
-                                            <small>Genel konfigürasyon yolu (sonuna / eklenmez)</small>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="logGroupName">CloudWatch Log Group</label>
-                                            <input type="text" id="logGroupName" name="logGroupName" placeholder="/yomu/docker-logs" value="/yomu/docker-logs" required>
-                                            <small>Logların gönderileceği grup</small>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn btn-primary">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="7 10 12 15 17 10"/>
-                                            <line x1="12" y1="15" x2="12" y2="3"/>
-                                        </svg>
-                                        Jenkinsfile Oluştur
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" id="resetForm">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                                            <path d="M3 3v5h5"/>
-                                        </svg>
-                                        Sıfırla
-                                    </button>
-                                </div>
-                            </form>
-
-                            <!-- Generated Output -->
-                            <div class="output-container" id="outputContainer" style="display: none;">
-                                <div class="output-header">
-                                    <h3>Oluşturulan Jenkinsfile</h3>
-                                    <div class="output-actions">
-                                        <button class="btn-sm btn-copy" id="copyOutput">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                                            </svg>
-                                            Kopyala
-                                        </button>
-                                        <button class="btn-sm btn-download" id="downloadOutput">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                                <polyline points="7 10 12 15 17 10"/>
-                                                <line x1="12" y1="15" x2="12" y2="3"/>
-                                            </svg>
-                                            İndir
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="code-block" data-lang="Groovy">
-                                    <pre id="generatedCode"></pre>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Setup Guide -->
-                <section class="section" id="setup-guide">
-                    <h2 class="section-title">
-                        <span class="number">8</span>
-                        Kurulum ve Entegrasyon Rehberi
-                    </h2>
-                    <div class="section-content">
-                        <p>Bu bölüm, sıfırdan kurulum yapacak geliştirici için kimlik doğrulama ve otomasyon adımlarını detaylandırır.</p>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">A. SSH Erişiminin Ayarlanması</h3>
-                            <p>Jenkins'in hedef sunucuya dosya atabilmesi ve komut çalıştırabilmesi için SSH Key çifti (Private/Public) gereklidir.</p>
-
-                            <div class="feature-card" style="margin: 1rem 0;">
-                                <h4 class="feature-card-title">🔑 Anahtar Oluşturma</h4>
-                                <p class="feature-card-content">Local bilgisayar veya Jenkins sunucusunda:</p>
-                            </div>
-
-                            <div class="code-block" data-lang="Bash">
-<pre><code>ssh-keygen -t rsa -b 4096 -f yomu_deploy_key</code></pre>
-                            </div>
-
-                            <p>Bu komut size <code>yomu_deploy_key</code> (Private) ve <code>yomu_deploy_key.pub</code> (Public) dosyalarını verir.</p>
-
-                            <div class="feature-card" style="margin: 1rem 0;">
-                                <h4 class="feature-card-title">🚀 Hedef Sunucuya Public Key Ekleme</h4>
-                                <div class="feature-card-content">
-                                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                        <li><code>yomu_deploy_key.pub</code> dosyasının içeriğini kopyalayın</li>
-                                        <li>Hedef sunucuya SSH ile bağlanın</li>
-                                        <li><code>~/.ssh/authorized_keys</code> dosyasını açın ve en alta bu içeriği yapıştırın</li>
-                                        <li>Dosya izinlerini doğrulayın: <code>chmod 600 ~/.ssh/authorized_keys</code></li>
-                                    </ol>
-                                </div>
-                            </div>
-
-                            <div class="feature-card" style="margin: 1rem 0;">
-                                <h4 class="feature-card-title">🔧 Jenkins'e Private Key Ekleme</h4>
-                                <div class="feature-card-content">
-                                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                        <li>Jenkins Panel → Manage Jenkins → Credentials → System → Global credentials</li>
-                                        <li><strong>Kind:</strong> SSH Username with private key</li>
-                                        <li><strong>ID:</strong> <code>deploy-server-ssh-key</code></li>
-                                        <li><strong>Username:</strong> <code>ec2-user</code> (veya sunucu kullanıcısı)</li>
-                                        <li><strong>Private Key:</strong> "Enter directly" seçin ve <code>yomu_deploy_key</code> içeriğini yapıştırın</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">B. Docker Hub Kimlik Bilgileri</h3>
-                            <p>Jenkins'in imajları Docker Hub'a yükleyebilmesi (push) için gereklidir.</p>
-
-                            <div class="feature-card" style="margin: 1rem 0;">
-                                <h4 class="feature-card-title">🐳 Docker Hub Access Token Alma</h4>
-                                <div class="feature-card-content">
-                                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                        <li>Docker Hub'a giriş yapın → Account Settings → Security → New Access Token</li>
-                                        <li>Token'a bir isim verin ve "Read & Write" yetkisi olduğundan emin olun</li>
-                                        <li>Token'ı kopyalayın</li>
-                                    </ol>
-                                </div>
-                            </div>
-
-                            <div class="feature-card" style="margin: 1rem 0;">
-                                <h4 class="feature-card-title">📝 Jenkins'e Ekleme</h4>
-                                <div class="feature-card-content">
-                                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                        <li>Jenkins Panel → Credentials → Add Credentials</li>
-                                        <li><strong>Kind:</strong> Username with password</li>
-                                        <li><strong>Username:</strong> Docker Hub kullanıcı adınız</li>
-                                        <li><strong>Password:</strong> Access Token</li>
-                                        <li><strong>ID:</strong> <code>dockerhub-credentials</code></li>
-                                    </ol>
-                                </div>
-                            </div>
-
-                            <div class="info-card warning">
-                                <div class="info-card-title">
-                                    <span>⚠️</span>
-                                    Güvenlik Önerisi
-                                </div>
-                                <p class="info-card-content">
-                                    Kendi hesabınızın şifresini kullanmak yerine Access Token kullanmanız önerilir.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="subsection">
-                            <h3 class="subsection-title">C. GitHub Webhook (Otomatik Tetikleme)</h3>
-                            <p>Koda push yapıldığında Jenkins'in otomatik çalışması için:</p>
-
-                            <div class="feature-card" style="margin: 1rem 0;">
-                                <h4 class="feature-card-title">🔔 Jenkins Job Ayarı</h4>
-                                <div class="feature-card-content">
-                                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                        <li>Projenin Jenkins Job ayarlarına gidin</li>
-                                        <li>Build Triggers altında "GitHub hook trigger for GITScm polling" seçeneğini işaretleyin</li>
-                                    </ol>
-                                </div>
-                            </div>
-
-                            <div class="feature-card" style="margin: 1rem 0;">
-                                <h4 class="feature-card-title">🔗 GitHub Repo Ayarı</h4>
-                                <div class="feature-card-content">
-                                    <ol style="margin-left: 1.5rem; margin-top: 0.5rem;">
-                                        <li>GitHub reposunda Settings → Webhooks → Add webhook yolunu izleyin</li>
-                                        <li><strong>Payload URL:</strong> <code>http://JENKINS_URL:8080/github-webhook/</code></li>
-                                        <li><strong>Content type:</strong> application/json</li>
-                                        <li><strong>Events:</strong> "Just the push event"</li>
-                                        <li>Webhook'u kaydedin</li>
-                                    </ol>
-                                </div>
-                            </div>
-
-                            <div class="info-card success">
-                                <div class="info-card-title">
-                                    <span>✅</span>
-                                    Başarılı Webhook
-                                </div>
-                                <p class="info-card-content">
-                                    Yeşil tik işareti, Jenkins'e başarıyla ulaşıldığını gösterir.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Troubleshooting -->
-                <section class="section" id="troubleshooting">
-                    <h2 class="section-title">
-                        <span class="number">9</span>
-                        Sorun Giderme
-                    </h2>
-                    <div class="section-content">
-
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Hata Mesajı</th>
-                                        <th>Olası Neden</th>
-                                        <th>Çözüm</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><code>jq: command not found</code></td>
-                                        <td>Jenkins sunucusunda jq eksik</td>
-                                        <td><code>sudo yum install jq</code> veya <code>apt-get install jq</code></td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>AccessDeniedException (SSM)</code></td>
-                                        <td>Jenkins IAM yetkisi eksik</td>
-                                        <td>"Jenkins Sunucusu IAM Politikası" bölümündeki izni kontrol edin</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>docker login fails</code></td>
-                                        <td>Credential hatası</td>
-                                        <td>Jenkins'teki dockerhub-credentials şifresini güncelleyin</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>CloudWatch logları gelmiyor</code></td>
-                                        <td>EC2 IAM yetkisi eksik</td>
-                                        <td>Hedef sunucunun IAM rolüne logs:CreateLogGroup ve logs:PutLogEvents yetkisi verin</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>Host key verification failed</code></td>
-                                        <td>SSH ilk bağlantı sorunu</td>
-                                        <td>Pipeline StrictHostKeyChecking=no parametresini kullanıyor</td>
-                                    </tr>
-                                    <tr>
-                                        <td><code>Permission denied (publickey)</code></td>
-                                        <td>SSH anahtarı yanlış</td>
-                                        <td>Public key'in hedef sunucuda authorized_keys içinde olduğundan emin olun</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Footer -->
-                <footer class="footer">
-                    <p>Yomu API Deployment Dokümantasyonu &copy; 2024</p>
-                    <p style="margin-top: 0.5rem; color: var(--text-light);">
-                        Jenkins CI/CD Pipeline & AWS Infrastructure Documentation
+                    <p class="card-desc">
+                        Tek sunucu için direkt deployment. Docker Hub, AWS SSM ve CloudWatch entegrasyonu içerir.
                     </p>
-                </footer>
+                    <ul class="card-features">
+                        <li>Tek sunucu mimarisi</li>
+                        <li>Docker Compose deployment</li>
+                        <li>SSM Parameter Store</li>
+                        <li>CloudWatch logging</li>
+                        <li>SSH/SCP transfer</li>
+                    </ul>
+                </a>
+
+                <!-- Blue/Green Deployment -->
+                <a href="bluegreen.html" class="deployment-card">
+                    <div class="card-header">
+                        <div class="card-icon">2</div>
+                        <h2 class="card-title">Blue/Green Deployment</h2>
+                        <span class="card-project">SingAI API</span>
+                    </div>
+                    <p class="card-desc">
+                        Zero-downtime deployment. ALB ile trafik switch, idle instance stop ile maliyet optimizasyonu.
+                    </p>
+                    <ul class="card-features">
+                        <li>Blue/Green stratejisi</li>
+                        <li>Application Load Balancer</li>
+                        <li>Health check loop</li>
+                        <li>Otomatik trafik switch</li>
+                        <li>Cost optimization</li>
+                    </ul>
+                </a>
             </div>
+
+            <!-- Comparison Table -->
+            <section class="comparison-section">
+                <h3 class="comparison-title">Karşılaştırma</h3>
+                <div class="comparison-table">
+                    <div class="comp-row comp-header">
+                        <div class="comp-label">Özellik</div>
+                        <div class="comp-value">Basic</div>
+                        <div class="comp-value">Blue/Green</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-label">Sunucu</div>
+                        <div class="comp-value">1</div>
+                        <div class="comp-value">2</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-label">Downtime</div>
+                        <div class="comp-value">~30 saniye</div>
+                        <div class="comp-value">Yok</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-label">Load Balancer</div>
+                        <div class="comp-value">Gerekli değil</div>
+                        <div class="comp-value">ALB</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-label">Rollback</div>
+                        <div class="comp-value">Manuel</div>
+                        <div class="comp-value">Otomatik</div>
+                    </div>
+                    <div class="comp-row">
+                        <div class="comp-label">Maliyet</div>
+                        <div class="comp-value">Düşük</div>
+                        <div class="comp-value">Orta</div>
+                    </div>
+                </div>
+            </section>
         </main>
+
+        <footer class="landing-footer">
+            <p>Jenkins Deployment Dokümantasyonu &copy; 2024</p>
+        </footer>
     </div>
-
-    <!-- Scroll to Top Button -->
-    <button class="scroll-top" id="scrollTop">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 19V5M5 12l7-7 7 7"/>
-        </svg>
-    </button>
-
-    <script src="js/main.js"></script>
 </body>
 </html>

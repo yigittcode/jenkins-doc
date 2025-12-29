@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SingAI API - Blue/Green Deployment Dokümantasyonu</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🔄</span>
+                    <span>SingAI API</span>
+                </div>
+                <p class="subtitle">Blue/Green Deployment</p>
+                <a href="index.html" class="back-link">← Ana Sayfa</a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Başlangıç</div>
+                    <a href="#hero" class="nav-item active">
+                        <span class="icon">🏠</span>
+                        <span>Giriş</span>
+                    </a>
+                    <a href="#architecture" class="nav-item">
+                        <span class="icon">🏗️</span>
+                        <span>Mimari</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Altyapı</div>
+                    <a href="#ec2-setup" class="nav-item">
+                        <span class="icon">🖥️</span>
+                        <span>EC2 & AMI</span>
+                    </a>
+                    <a href="#security-groups" class="nav-item">
+                        <span class="icon">🔒</span>
+                        <span>Security Groups</span>
+                    </a>
+                    <a href="#alb-setup" class="nav-item">
+                        <span class="icon">⚖️</span>
+                        <span>Load Balancer</span>
+                    </a>
+                    <a href="#iam-roles" class="nav-item">
+                        <span class="icon">🔐</span>
+                        <span>IAM Rolleri</span>
+                    </a>
+                    <a href="#ssm-setup" class="nav-item">
+                        <span class="icon">📦</span>
+                        <span>SSM Parameters</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Pipeline</div>
+                    <a href="#variable-reference" class="nav-item">
+                        <span class="icon">📚</span>
+                        <span>Değişken Sözlüğü</span>
+                    </a>
+                    <a href="#slack-notifications" class="nav-item">
+                        <span class="icon">💬</span>
+                        <span>Slack Bildirimleri</span>
+                    </a>
+                    <a href="#pipeline-flow" class="nav-item">
+                        <span class="icon">⚙️</span>
+                        <span>Pipeline Akışı</span>
+                    </a>
+                    <a href="#pipeline-logic" class="nav-item">
+                        <span class="icon">🧠</span>
+                        <span>Karar Mantığı</span>
+                    </a>
+                    <a href="#quality-stage" class="nav-item">
+                        <span class="icon">🧪</span>
+                        <span>Quality & Tests</span>
+                    </a>
+                    <a href="#deploy-stage" class="nav-item">
+                        <span class="icon">🚀</span>
+                        <span>Deployment Mantığı</span>
+                    </a>
+                    <a href="#jenkinsfile-reference" class="nav-item">
+                        <span class="icon">📄</span>
+                        <span>Jenkinsfile</span>
+                    </a>
+                    <a href="#jenkinsfile-generator" class="nav-item">
+                        <span class="icon">⚡</span>
+                        <span>Jenkinsfile Oluşturucu</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Destek</div>
+                    <a href="#troubleshooting" class="nav-item">
+                        <span class="icon">🔍</span>
+                        <span>Sorun Giderme</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Overlay for mobile -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <header class="header">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="menu-toggle" id="menuToggle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12h18M3 6h18M3 18h18"/>
+                        </svg>
+                    </button>
+                    <h1 class="header-title">Blue/Green Deployment Dokümantasyonu</h1>
+                </div>
+                <div class="header-actions">
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">SingAI API v1.0</span>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Hero Section -->
+                <section class="hero" id="hero" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <div class="hero-content">
+                        <span class="hero-badge">
+                            <span>🔄</span>
+                            Cost-Optimized Blue/Green Deployment
+                        </span>
+                        <h1 class="hero-title">SingAI API Blue/Green Deployment</h1>
+                        <p class="hero-subtitle">
+                            Sıfır kesinti süresi (zero-downtime) deployment stratejisi.
+                            İki özdeş ortam (Blue ve Green) arasında trafik switch edilir.
+                            Pasif ortam maliyet tasarrufu için kapalı tutulur.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Architecture Section -->
+                <section class="section" id="architecture">
+                    <h2 class="section-title">
+                        <span class="number">🏗️</span>
+                        Mimari ve Strateji
+                    </h2>
+                    <div class="section-content">
+                        <p>Bu proje, maliyet ve erişilebilirlik dengesini sağlayan <strong>Cost-Optimized Blue/Green Deployment</strong> stratejisini kullanır.</p>
+
+                        <div class="info-card success">
+                            <div class="info-card-title">
+                                <span>💡</span>
+                                Blue/Green Nedir?
+                            </div>
+                            <p class="info-card-content">
+                                İki özdeş ortam (Blue ve Green) vardır. Biri canlı trafiği (Active) karşılarken, diğeri (Passive) boşta bekler.
+                                Deployment sırasında trafik pasif ortama switch edilir.
+                            </p>
+                        </div>
+
+                        <div class="info-card warning">
+                            <div class="info-card-title">
+                                <span>💰</span>
+                                Cost Optimization (Maliyet Tasarrufu)
+                            </div>
+                            <p class="info-card-content">
+                                Pasif olan ortamın EC2 sunucusu kapalı (STOPPED) tutulur. Pipeline çalıştığında pasif sunucu ayağa kaldırılır,
+                                test edilir, trafik oraya yönlendirilir ve eski sunucu kapatılır.
+                            </p>
+                        </div>
+
+                        <div class="pipeline-steps">
+                            <div class="pipeline-step">
+                                <span class="step-number">1</span>
+                                <div class="step-content">
+                                    <div class="step-title">Current: Blue Active</div>
+                                    <div class="step-desc">Canlı trafik Blue ortamına akıyor. Green sunucusu kapalı.</div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">2</span>
+                                <div class="step-content">
+                                    <div class="step-title">Start Green</div>
+                                    <div class="step-desc">Green sunucusu ayağa kaldırılır ve SSH hazır olana kadar beklenir.</div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">3</span>
+                                <div class="step-content">
+                                    <div class="step-title">Deploy to Green</div>
+                                    <div class="step-desc">Yeni imaj pull edilir, konteynerler başlatılır.</div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">4</span>
+                                <div class="step-content">
+                                    <div class="step-title">Health Check</div>
+                                    <div class="step-desc">/health endpoint kontrolü, 200 OK beklenir.</div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">5</span>
+                                <div class="step-content">
+                                    <div class="step-title">Traffic Switch</div>
+                                    <div class="step-desc">ALB kuralı güncellenir, trafik Green'e yönlenir.</div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">6</span>
+                                <div class="step-content">
+                                    <div class="step-title">Stop Blue</div>
+                                    <div class="step-desc">Eski Blue sunucusu kapatılır (maliyet tasarrufu).</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Variable Reference (Sözlük) -->
+                <section class="section" id="variable-reference">
+                    <h2 class="section-title">
+                        <span class="number">📚</span>
+                        Jenkinsfile Değişkenleri ve AWS Karşılıkları
+                    </h2>
+                    <div class="section-content">
+                        <p>Jenkinsfile <code>environment</code> bloğunda tanımlanan ve AWS SSM'den çekilen her parametrenin detaylı açıklaması aşağıdadır. Bu tabloyu kurulum yaparken referans olarak kullanın.</p>
+
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Jenkins Değişkeni</th>
+                                        <th>AWS SSM Yolu</th>
+                                        <th>Ne İşe Yarar?</th>
+                                        <th>AWS Konsolunda Neresi?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>ALB_LISTENER_ARN</code></td>
+                                        <td><code>/singai/prod/alb_listener_arn</code></td>
+                                        <td>Load Balancer'ın hangi portu dinlediğini belirtir (Genelde 443 veya 80).</td>
+                                        <td>EC2 > Load Balancers > Listeners sekmesindeki Listener ID'sidir (ARN formatında).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ALB_RULE_ARN</code> <span class="badge" style="background: var(--danger);">⭐️</span></td>
+                                        <td><code>/singai/prod/alb_rule_arn</code></td>
+                                        <td><strong>En Kritik Parça.</strong> Trafiği Blue veya Green'e yönlendiren "Kuralın" kimliğidir. Pipeline bu kuralı güncelleyerek (ModifyRule) trafiği kaydırır.</td>
+                                        <td>EC2 > Load Balancers > Listeners > Rules kısmına gidin. Yönlendirme yapan kuralı seçin. ARN genelde CLI ile alınır (<code>aws elbv2 describe-rules</code>).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>BLUE_TG_ARN</code></td>
+                                        <td><code>/singai/prod/blue_tg_arn</code></td>
+                                        <td>Blue ortamı için tanımlı Target Group kimliği. Trafik buraya yönlendirilir.</td>
+                                        <td>EC2 > Target Groups. SingAI-Blue-TG grubunu seçin, detaylarda ARN yazar.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>GREEN_TG_ARN</code></td>
+                                        <td><code>/singai/prod/green_tg_arn</code></td>
+                                        <td>Green ortamı için tanımlı Target Group kimliği.</td>
+                                        <td>EC2 > Target Groups. SingAI-Green-TG grubunu seçin, detaylarda ARN yazar.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>BLUE_SERVER_IP</code></td>
+                                        <td><code>/singai/prod/blue_server_ip</code></td>
+                                        <td>Blue sunucusuna SSH atmak ve kod deploy etmek için kullanılan IP.</td>
+                                        <td>EC2 > Instances. Blue sunucusunu seçin -> Private IP (veya VPN yoksa Public IP).</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>GREEN_SERVER_IP</code></td>
+                                        <td><code>/singai/prod/green_server_ip</code></td>
+                                        <td>Green sunucusuna SSH atmak için IP.</td>
+                                        <td>EC2 > Instances. Green sunucusunu seçin -> IP adresi.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>BLUE_INSTANCE_ID</code></td>
+                                        <td><code>/singai/prod/blue_instance_id</code></td>
+                                        <td>Sunucuyu Start/Stop etmek için gereken AWS ID'si (Örn: <code>i-0abc...</code>).</td>
+                                        <td>EC2 > Instances. Blue sunucusunu seçin -> Instance ID.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>GREEN_INSTANCE_ID</code></td>
+                                        <td><code>/singai/prod/green_instance_id</code></td>
+                                        <td>Green sunucusunu Start/Stop etmek için ID.</td>
+                                        <td>EC2 > Instances. Green sunucusunu seçin -> Instance ID.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ALB_DNS_NAME</code></td>
+                                        <td><code>/singai/prod/alb_dns_name</code></td>
+                                        <td>Slack bildiriminde "Buradan test edin" linki vermek için kullanılır.</td>
+                                        <td>EC2 > Load Balancers. ALB'yi seçin -> DNS name (Açıklama kısmında yazar).</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="info-card warning">
+                            <div class="info-card-title">
+                                <span>🔥</span>
+                                Kritik: ALB Rule ARN Nasıl Bulunur?
+                            </div>
+                            <p class="info-card-content">
+                                Bu ARN konsolda açıkça yazmaz. AWS CLI ile bulmanız en garantisidir:
+                            </p>
+                            <div class="code-block" data-lang="Bash">
+<pre><code># Listener ARN'inizi kullanarak kuralları listeleyin:
+aws elbv2 describe-rules --listener-arn <Listener_ARN_Buraya>
+
+# Çıktı içinde Priority'si sizin belirlediğiniz (örn: 1) olan kuralın "RuleArn" değerini kopyalayın.
+# Bu değer "arn:aws:elasticloadbalancing:...:listener-rule/app/..." diye gider.
+# İşte bu değeri SSM'de /singai/prod/alb_rule_arn içine yazacaksınız!</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EC2 Setup -->
+                <section class="section" id="ec2-setup">
+                    <h2 class="section-title">
+                        <span class="number">1</span>
+                        EC2 ve AMI Hazırlığı
+                    </h2>
+                    <div class="section-content">
+                        <p>Blue ve Green ortamları için iki adet EC2 instance oluşturulmalıdır.</p>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">AMI Hazırlığı</h3>
+                            <ul>
+                                <li><strong>AMI:</strong> Amazon Linux 2 veya Ubuntu (Docker yüklü olmalı)</li>
+                                <li>Docker kurulumu: <code>sudo yum install docker</code> veya <code>apt install docker.io</code></li>
+                                <li>Kullanıcıyı docker grubuna ekleme: <code>sudo usermod -aG docker ec2-user</code></li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Instance Etiketleri (Tags)</h3>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tag</th>
+                                            <th>Instance 1</th>
+                                            <th>Instance 2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>Name</code></td>
+                                            <td><code>SingAI-Blue</code></td>
+                                            <td><code>SingAI-Green</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Security Groups -->
+                <section class="section" id="security-groups">
+                    <h2 class="section-title">
+                        <span class="number">2</span>
+                        Security Groups (Güvenlik Grupları)
+                    </h2>
+                    <div class="section-content">
+                        <p>Uygulamanın çalışacağı EC2'lar için aşağıdaki portlar açılmalıdır:</p>
+
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Tip</th>
+                                        <th>Protokol</th>
+                                        <th>Port</th>
+                                        <th>Kaynak (Source)</th>
+                                        <th>Açıklama</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>SSH</td>
+                                        <td>TCP</td>
+                                        <td>22</td>
+                                        <td>Jenkins IP / Bastion Host</td>
+                                        <td>Deployment sırasında SSH bağlantısı</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Custom TCP</td>
+                                        <td>TCP</td>
+                                        <td>8001</td>
+                                        <td>ALB Security Group</td>
+                                        <td>Sadece Load Balancer'dan gelen trafik</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ALB Setup -->
+                <section class="section" id="alb-setup">
+                    <h2 class="section-title">
+                        <span class="number">3</span>
+                        Load Balancer ve Target Groups
+                    </h2>
+                    <div class="section-content">
+                        <p>Trafik yönlendirmesi için Application Load Balancer (ALB) kullanılır.</p>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Target Groups (Hedef Grupları)</h3>
+                            <p>İki adet TG oluşturun:</p>
+
+                            <div class="feature-grid">
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">SingAI-Blue-TG</h4>
+                                    <p class="feature-card-content">
+                                        Port: 8001 (HTTP)<br>
+                                        Health Check: /health
+                                    </p>
+                                </div>
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">SingAI-Green-TG</h4>
+                                    <p class="feature-card-content">
+                                        Port: 8001 (HTTP)<br>
+                                        Health Check: /health
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">CloudWatch Alarmları</h3>
+                            <p>Her Target Group için ayrı alarmlar oluşturun:</p>
+                            <ul>
+                                <li><code>singai-Blue-TG-UnHealthyHost-Alarm-Critical</code></li>
+                                <li><code>singai-Green-TG-UnHealthyHost-Alarm-Critical</code></li>
+                            </ul>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Application Load Balancer (ALB) Oluşturma</h3>
+                            <p><strong>EC2 > Load Balancers > Create Load Balancer (ALB)</strong> adımlarını izleyin:</p>
+                            <ul>
+                                <li><strong>Type:</strong> Application Load Balancer (ALB)</li>
+                                <li><strong>Scheme:</strong> Internet-facing (dünyaya açık)</li>
+                                <li><strong>IP address type:</strong> IPv4</li>
+                                <li><strong>Listeners:</strong> HTTP (80) veya HTTPS (443) ekleyin</li>
+                                <li><strong>Default Action:</strong> Şimdilik <code>Forward to: SingAI-Blue-TG</code> seçin</li>
+                            </ul>
+                            <p>ALB oluştuktan sonra ARN'ini not alın.</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">
+                                <span class="badge" style="background: var(--danger);">⚠️</span>
+                                ALB Rule (Kural) Yapılandırması
+                            </h3>
+                            <p>Jenkins'in "Trafiği Blue'dan Green'e çevir" diyebilmesi için, Listener'ın altında spesifik bir kurala ihtiyacı vardır. Default kuralı değiştirmek yerine yeni bir kural eklemek daha güvenlidir.</p>
+
+                            <div class="info-card warning">
+                                <div class="info-card-title">
+                                    <span>📋</span>
+                                    Adım Adım Rule Oluşturma
+                                </div>
+                                <div class="info-card-content">
+                                    <ol style="margin-left: 1rem;">
+                                        <li>Oluşturduğunuz ALB'ye gidin → <strong>Listeners</strong> sekmesi</li>
+                                        <li>Mevcut Listener'a tıklayın → <strong>Rules (Kurallar)</strong> sekmesi</li>
+                                        <li><strong>Manage Rules</strong> → <strong>Add Rule</strong> (Artı butonu)</li>
+                                        <li><strong>Condition (Koşul):</strong> Örn: Host Header = <code>api.singai.com</code> (veya Path = <code>/api*</code>)</li>
+                                        <li><strong>Action (Aksiyon):</strong> Forward to → <code>SingAI-Blue-TG</code> (%100 Weight)</li>
+                                        <li><strong>Priority:</strong> 1 (veya uygun bir sayı)</li>
+                                        <li>Kaydedin</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- IAM Roles -->
+                <section class="section" id="iam-roles">
+                    <h2 class="section-title">
+                        <span class="number">4</span>
+                        IAM Rolleri ve Yetkiler
+                    </h2>
+                    <div class="section-content">
+                        <p>Pipeline'ın AWS kaynaklarını yönetebilmesi için iki farklı IAM yetkisine ihtiyaç vardır.</p>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">A. Jenkins Sunucusu için IAM Politikası</h3>
+                            <p>Jenkins'in çalıştığı sunucuya aşağıdaki JSON politikasını ekleyin:</p>
+
+                            <div class="code-block" data-lang="JSON">
+<pre><code>{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "SSMReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParameter",
+                "ssm:GetParameters"
+            ],
+            "Resource": "arn:aws:ssm:eu-central-1:*:parameter/singai/prod/*"
+        },
+        {
+            "Sid": "EC2PowerManagement",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:StartInstances",
+                "ec2:StopInstances",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceStatus"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "ALBTrafficSwitch",
+            "Effect": "Allow",
+            "Action": [
+                "elasticloadbalancing:ModifyRule",
+                "elasticloadbalancing:DescribeRules"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "CloudWatchAlarmControl",
+            "Effect": "Allow",
+            "Action": [
+                "cloudwatch:EnableAlarmActions",
+                "cloudwatch:DisableAlarmActions"
+            ],
+            "Resource": "*"
+        }
+    ]
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">B. Uygulama Sunucuları (Blue/Green EC2) için IAM Rolü</h3>
+                            <div class="info-card">
+                                <div class="info-card-title">
+                                    <span>📋</span>
+                                    Gerekli Managed Politikalar
+                                </div>
+                                <p class="info-card-content">
+                                    <code>AmazonSSMManagedInstanceCore</code><br>
+                                    <code>CloudWatchAgentServerPolicy</code>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SSM Setup -->
+                <section class="section" id="ssm-setup">
+                    <h2 class="section-title">
+                        <span class="number">5</span>
+                        SSM Parameter Store Konfigürasyonu
+                    </h2>
+                    <div class="section-content">
+                        <p>Pipeline kodunda gördüğünüz tüm değişkenler AWS Systems Manager > Parameter Store altında tanımlanmalıdır.</p>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">
+                                <span class="badge">Altyapı</span>
+                                Altyapı Parametreleri (Type: String)
+                            </h3>
+                            <div class="code-block" data-lang="Bash">
+<pre><code># ALB ve Target Group ARN'leri
+aws ssm put-parameter --name "/singai/prod/alb_listener_arn" --value "arn:aws:elasticloadbalancing:..." --type String
+aws ssm put-parameter --name "/singai/prod/alb_rule_arn" --value "arn:aws:elasticloadbalancing:..." --type String
+aws ssm put-parameter --name "/singai/prod/blue_tg_arn" --value "arn:aws:elasticloadbalancing:..." --type String
+aws ssm put-parameter --name "/singai/prod/green_tg_arn" --value "arn:aws:elasticloadbalancing:..." --type String
+aws ssm put-parameter --name "/singai/prod/alb_dns_name" --value "my-alb-123.eu-central-1.elb.amazonaws.com" --type String
+
+# Sunucu Bilgileri
+aws ssm put-parameter --name "/singai/prod/blue_server_ip" --value "10.0.1.5" --type String
+aws ssm put-parameter --name "/singai/prod/green_server_ip" --value "10.0.1.6" --type String
+aws ssm put-parameter --name "/singai/prod/blue_instance_id" --value "i-0abcd1234" --type String
+aws ssm put-parameter --name "/singai/prod/green_instance_id" --value "i-0xyz98765" --type String</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">
+                                <span class="badge" style="background: var(--danger);">Secure</span>
+                                Uygulama Sırları (Type: SecureString)
+                            </h3>
+                            <div class="code-block" data-lang="Bash">
+<pre><code># Firebase & AI Service Keys
+aws ssm put-parameter --name "/singai/prod/firebase_admin_sdk_key" --value "{...json...}" --type SecureString
+aws ssm put-parameter --name "/singai/prod/openai_api_key" --value "sk-..." --type SecureString
+
+# AWS Keys
+aws ssm put-parameter --name "/singai/prod/aws_access_key_id" --value "AKIA..." --type SecureString
+aws ssm put-parameter --name "/singai/prod/aws_secret_access_key" --value "..." --type SecureString
+
+# Redis
+aws ssm put-parameter --name "/singai/prod/redis_host" --value "10.0.2.10" --type String
+aws ssm put-parameter --name "/singai/prod/redis_port" --value "6379" --type String
+
+# Diğer API Keys
+aws ssm put-parameter --name "/singai/prod/replicate_api_token" --value "..." --type SecureString
+aws ssm put-parameter --name "/singai/prod/rapidapi_key" --value "..." --type SecureString
+aws ssm put-parameter --name "/singai/prod/youtube_api_key" --value "..." --type SecureString
+# ... diğer tüm API keyler</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slack Notifications -->
+                <section class="section" id="slack-notifications">
+                    <h2 class="section-title">
+                        <span class="number">6</span>
+                        Slack Bildirimleri
+                    </h2>
+                    <div class="section-content">
+                        <p>Pipeline başarılı veya başarısız olduğunda Slack'e bildirim gönderir. Bu sayede takım anında bilgilendirilir.</p>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Slack Webhook Kurulumu</h3>
+                            <div class="info-card">
+                                <div class="info-card-title">
+                                    <span>🔗</span>
+                                    Webhook URL Oluşturma
+                                </div>
+                                <div class="info-card-content">
+                                    <ol style="margin-left: 1rem;">
+                                        <li>Slack workspace'inizde <strong>Apps</strong> → <strong>Incoming Webhooks</strong>'e gidin</li>
+                                        <li><strong>Add New Webhook to Workspace</strong> seçeneğine tıklayın</li>
+                                        <li>Bildirimlerin gönderileceği kanalı seçin</li>
+                                        <li>Oluşturulan webhook URL'yi kopyalayın</li>
+                                        <li>Jenkins'te <strong>Manage Credentials</strong> → <strong>Secret Text</strong> olarak ekleyin</li>
+                                        <li>Credential ID: <code>slack-webhook</code></li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Başarılı Bildirim (Success)</h3>
+                            <div class="code-block" data-lang="Groovy">
+<pre><code>success {
+  withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_URL')]) {
+    script {
+      def text = """
+        *Job:* ${JOB_NAME}
+        *Build #:* ${BUILD_NUMBER}
+        *Git Branch:* ${env.GIT_BRANCH}
+        *Commit:* ${env.GIT_COMMIT}
+        *Author:* ${env.GIT_AUTHOR}
+        *Status:* SUCCESS ✅
+        *Traffic Switch:* ${env.CURRENT_ENV} → ${env.DEPLOYED_ENV}
+        *Access URL:* http://${env.ALB_DNS_NAME}
+      """.stripIndent().replaceAll('\n', '\\n')
+
+      def json = """
+        {
+          "username": "jenkins-bot",
+          "icon_emoji": ":rocket:",
+          "attachments": [{
+            "color": "#36a64f",
+            "title": "✅ Build Success",
+            "text": "${text}",
+            "footer": "Jenkins • Blue/Green Deployment"
+          }]
+        }
+      """.stripIndent().replaceAll('\n', '')
+
+      sh "curl -X POST --data-urlencode 'payload=${json}' ${SLACK_URL}"
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Başarısız Bildirim (Failure)</h3>
+                            <div class="code-block" data-lang="Groovy">
+<pre><code>failure {
+  withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_URL')]) {
+    script {
+      def text = """
+        *Job:* ${JOB_NAME}
+        *Build #:* ${BUILD_NUMBER}
+        *Git Branch:* ${env.GIT_BRANCH}
+        *Status:* FAILED ❌
+        *Access URL:* http://${env.ALB_DNS_NAME}
+        Check Jenkins logs for details.
+      """.stripIndent().replaceAll('\n', '\\n')
+
+      def json = """
+        {
+          "username": "jenkins-bot",
+          "icon_emoji": ":x:",
+          "attachments": [{
+            "color": "#ff0000",
+            "title": "❌ Build Failed",
+            "text": "${text}",
+            "footer": "Jenkins • Blue/Green Deployment"
+          }]
+        }
+      """.stripIndent().replaceAll('\n', '')
+
+      sh "curl -X POST --data-urlencode 'payload=${json}' ${SLACK_URL}"
+    }
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pipeline Flow -->
+                <section class="section" id="pipeline-flow">
+                    <h2 class="section-title">
+                        <span class="number">6</span>
+                        Jenkins Pipeline İşleyiş Detayları
+                    </h2>
+                    <div class="section-content">
+                        <div class="subsection">
+                            <h3 class="subsection-title">1. Environment Setup (Ortam Hazırlığı)</h3>
+                            <p>Pipeline başladığında ilk iş olarak <code>aws ssm get-parameter</code> komutları çalışır.</p>
+                            <div class="info-card">
+                                <div class="info-card-title">
+                                    <span>💡</span>
+                                    Avantaj
+                                </div>
+                                <p class="info-card-content">
+                                    IP adresi veya şifre kodun içine gömülmez. AWS altyapısı değişirse sadece SSM parametresini güncellemek yeterlidir.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">2. Quality & Tests (Kalite Kontrolü)</h3>
+                            <ul>
+                                <li><strong>Teknoloji:</strong> uv (hızlı Python paket yöneticisi) ve pytest</li>
+                                <li><strong>Coverage Threshold:</strong> Kodun en az %30'unun test edilmiş olması zorunludur</li>
+                                <li><strong>Docker Agent:</strong> <code>proksiyazilimdocker/helper-python-agent-for-singai</code> konteynerinde çalışır</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pipeline Logic (Karar Mantığı) -->
+                <section class="section" id="pipeline-logic">
+                    <h2 class="section-title">
+                        <span class="number">🧠</span>
+                        Pipeline Karar Mantığı (Nasıl Karar Veriyor?)
+                    </h2>
+                    <div class="section-content">
+                        <p>Jenkinsfile içindeki Deploy Blue/Green aşaması şu mantıkla çalışır:</p>
+
+                        <div class="pipeline-steps">
+                            <div class="pipeline-step">
+                                <span class="step-number">1</span>
+                                <div class="step-content">
+                                    <div class="step-title">Sorgu: "Şu an trafik nereden geçiyor?"</div>
+                                    <div class="step-desc">
+                                        <code>aws elbv2 describe-rules --rule-arn ${ALB_RULE_ARN}</code> komutunu çalıştırır.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">2</span>
+                                <div class="step-content">
+                                    <div class="step-title">Soru: "Ey AWS, şu an bu kural trafiği hangi Target Group'a gönderiyor?"</div>
+                                    <div class="step-desc">
+                                        Cevabı <code>Actions[0].TargetGroupArn</code> alanından alır.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">3</span>
+                                <div class="step-content">
+                                    <div class="step-title">Tespit: Hedefi Belirle</div>
+                                    <div class="step-desc">
+                                        <ul style="margin: 0.5rem 0; padding-left: 1rem;">
+                                            <li>Eğer cevap <code>BLUE_TG_ARN</code> ise → Demek ki Blue canlıda. O zaman <strong>Hedef: Green</strong>.</li>
+                                            <li>Eğer cevap <code>GREEN_TG_ARN</code> ise → Demek ki Green canlıda. O zaman <strong>Hedef: Blue</strong>.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pipeline-step">
+                                <span class="step-number">4</span>
+                                <div class="step-content">
+                                    <div class="step-title">Operasyon: Deploy & Switch</div>
+                                    <div class="step-desc">
+                                        <ol style="margin: 0.5rem 0; padding-left: 1rem;">
+                                            <li>Hedef sunucuyu (örn: Green) <strong>Start</strong> et</li>
+                                            <li>SSH ile bağlan, Docker'ı temizle, yeni imajı çek, konteyneri başlat</li>
+                                            <li>Localhost <code>/health</code> kontrolü yap</li>
+                                            <li><strong>Geçiş (Switch):</strong> <code>aws elbv2 modify-rule</code> ile kuralı güncelle: "Artık trafiği Green TG'ye yönlendir"</li>
+                                            <li><strong>Tasarruf:</strong> Eski sunucuyu (Blue) Stop et</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-card success">
+                            <div class="info-card-title">
+                                <span>💡</span>
+                                Otomatik Karar Mekanizması
+                            </div>
+                            <p class="info-card-content">
+                                Pipeline her çalıştığında mevcut durumu analiz eder ve tersi ortama deploy eder.
+                                Bu sayede manuel müdahaleye gerek kalmadan sürekli olarak Blue ↔ Green arasında geçiş yapılır.
+                            </p>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Groovy Kod Örneği</h3>
+                            <div class="code-block" data-lang="Groovy">
+<pre><code>// Mevcut durumu sorgula
+def currentTarget = sh(
+    script: """
+        aws elbv2 describe-rules \\
+            --rule-arn ${ALB_RULE_ARN} \\
+            --query "Rules[0].Actions[0].TargetGroupArn" \\
+            --output text
+    """,
+    returnStdout: true
+).trim()
+
+// Kararı ver
+def isBlueActive = (currentTarget == BLUE_TG_ARN)
+def targetServer = isBlueActive ? GREEN_SERVER_IP : BLUE_SERVER_IP
+def targetTG = isBlueActive ? GREEN_TG_ARN : BLUE_TG_ARN
+def targetEnv = isBlueActive ? 'GREEN' : 'BLUE'
+
+echo "Current: ${isBlueActive ? 'BLUE' : 'GREEN'} → Target: ${targetEnv}"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quality Stage -->
+                <section class="section" id="quality-stage">
+                    <h2 class="section-title">
+                        <span class="number">7</span>
+                        Quality & Tests Stage
+                    </h2>
+                    <div class="section-content">
+                        <p>Bu stage, kod kalitesini garanti altına almak için çalıştırılır:</p>
+
+                        <div class="code-block" data-lang="Groovy">
+<pre><code>stage('Quality & Tests') {
+    agent { docker { image "${env.PYTHON_AGENT_IMAGE}"; args '-u root' } }
+    steps {
+        sh '''
+            uv sync --frozen --all-extras
+
+            # Test environment variables
+            export TESTING=1
+            export FIREBASE_ADMIN_SDK_KEY="{}"
+            # ... dummy değerler
+
+            # Pytest with coverage
+            uv run pytest tests/ --verbose \
+                --cov=app \
+                --cov-report=html:htmlcov \
+                --cov-report=xml:coverage.xml \
+                --junitxml=test-results.xml
+        '''
+    }
+}</code></pre>
+                        </div>
+
+                        <div class="info-card warning">
+                            <div class="info-card-title">
+                                <span>⚠️</span>
+                                Coverage Threshold
+                            </div>
+                            <p class="info-card-content">
+                                Coverage oranı <code>COVERAGE_THRESHOLD</code> (varsayılan %30) altında ise pipeline başarısız olur.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Deploy Stage -->
+                <section class="section" id="deploy-stage">
+                    <h2 class="section-title">
+                        <span class="number">8</span>
+                        Deployment Mantığı (Adım Adım)
+                    </h2>
+                    <div class="section-content">
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Adım 1: Hedef Analizi</h3>
+                            <p>Sistem AWS'ye sorar: "Şu an trafik nereye akıyor?"</p>
+                            <div class="code-block" data-lang="Groovy">
+<pre><code>def currentTarget = sh(
+    script: """
+        aws elbv2 describe-rules \
+            --rule-arn ${ALB_RULE_ARN} \
+            --query "Rules[0].Actions[0].TargetGroupArn" \
+            --output text
+    """,
+    returnStdout: true
+).trim()
+
+def isBlueActive = (currentTarget == BLUE_TG_ARN)
+def targetServer = isBlueActive ? GREEN_SERVER_IP : BLUE_SERVER_IP
+def targetEnv = isBlueActive ? 'GREEN' : 'BLUE'</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Adım 2: Instance Başlatma (Cold Start)</h3>
+                            <div class="code-block" data-lang="Groovy">
+<pre><code>echo "Starting target instance: ${targetInstanceId}..."
+sh "aws ec2 start-instances --instance-ids ${targetInstanceId}"
+sh "aws ec2 wait instance-running --instance-ids ${targetInstanceId}"
+sh "aws ec2 wait instance-status-ok --instance-ids ${targetInstanceId}"</code></pre>
+                            </div>
+                            <p class="section-content">Bu adım yaklaşık 1-2 dakika sürebilir.</p>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Adım 3: Deploy (SSH → Docker)</h3>
+                            <div class="code-block" data-lang="Bash">
+<pre><code>ssh ec2-user@${targetServer} <<'EOSSH'
+    # Eski konteynerleri temizle
+    docker rm -f myapp myapp-worker 2>/dev/null || true
+
+    # Yeni imajı çek
+    docker pull ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+
+    # SSM'den sırları al
+    FB_ADMIN_KEY=$(aws ssm get-parameter --name /singai/prod/firebase_admin_sdk_key ...)
+    # ... diğer sırlar
+
+    # Konteynerleri başlat
+    docker run -d --name myapp -p 8001:8001 \
+        -e FIREBASE_ADMIN_SDK_KEY="$FB_ADMIN_KEY" \
+        # ... diğer environment variables
+        ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+
+    docker run -d --name myapp-worker \
+        # ... worker ayarları
+        ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} \
+        /app/.venv/bin/celery -A celery_worker.app worker
+EOSSH</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Adım 4: Health Check & Switch</h3>
+                            <div class="code-block" data-lang="Groovy">
+<pre><code>// Health check loop
+for (int i = 0; i < 60; i++) {
+    def status = sh(
+        script: "curl -s -o /dev/null -w '%{http_code}' http://${targetServer}:8001/health",
+        returnStdout: true
+    ).trim()
+    if (status == '200') { break }
+    sleep 2
+}
+
+// Traffic switch
+sh """
+    aws elbv2 modify-rule \
+        --rule-arn ${ALB_RULE_ARN} \
+        --actions Type=forward,TargetGroupArn=${targetTG}
+"""</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">Adım 5: Eski Makineyi Durdur (Cost Saving)</h3>
+                            <div class="code-block" data-lang="Groovy">
+<pre><code>echo "Stopping old instance to save costs..."
+sh "aws ec2 stop-instances --instance-ids ${oldInstanceId}"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Jenkinsfile Generator -->
+                <section class="section" id="jenkinsfile-generator">
+                    <h2 class="section-title">
+                        <span class="number">9</span>
+                        Blue/Green Jenkinsfile Oluşturucu
+                    </h2>
+                    <div class="section-content">
+                        <p>Aşağıdaki formu doldurarak projenize özel Blue/Green Jenkinsfile'ı oluşturun.</p>
+
+                        <div class="generator-container">
+                            <form id="bluegreenForm" class="generator-form">
+                                <!-- Basic Settings -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">⚙️ Temel Ayarlar</h4>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="bg_dockerImage">Docker İmaj Adı</label>
+                                            <input type="text" id="bg_dockerImage" value="proksiyazilimdocker/singai-api" required>
+                                            <small>Docker Hub imaj adı</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_pythonAgent">Python Agent İmaj</label>
+                                            <input type="text" id="bg_pythonAgent" value="proksiyazilimdocker/helper-python-agent-for-singai:v1.0.0-uv" required>
+                                            <small>Test konteyner imajı</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_coverage">Coverage Threshold (%)</label>
+                                            <input type="number" id="bg_coverage" value="30" min="0" max="100" required>
+                                            <small>Minimum test coverage</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_awsRegion">AWS Bölgesi</label>
+                                            <select id="bg_awsRegion">
+                                                <option value="eu-central-1" selected>eu-central-1</option>
+                                                <option value="eu-west-1">eu-west-1</option>
+                                                <option value="eu-west-2">eu-west-2</option>
+                                                <option value="us-east-1">us-east-1</option>
+                                                <option value="us-west-2">us-west-2</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SSM Prefix -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">📦 SSM Parameter Prefix</h4>
+                                    <div class="form-group">
+                                        <label for="bg_ssmPrefix">SSM Path Prefix</label>
+                                        <input type="text" id="bg_ssmPrefix" value="/singai/prod" required>
+                                        <small>SSM parametrelerinin ön eki (trailing slash yok)</small>
+                                    </div>
+                                </div>
+
+                                <!-- ALB & Target Groups -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">⚖️ ALB & Target Groups (ARN)</h4>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="bg_albListenerArn">ALB Listener ARN</label>
+                                            <input type="text" id="bg_albListenerArn" placeholder="arn:aws:elasticloadbalancing:..." required>
+                                            <small>Listener ARN'si</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_albRuleArn">ALB Rule ARN</label>
+                                            <input type="text" id="bg_albRuleArn" placeholder="arn:aws:elasticloadbalancing:..." required>
+                                            <small>Rule ARN'si</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_blueTgArn">Blue Target Group ARN</label>
+                                            <input type="text" id="bg_blueTgArn" placeholder="arn:aws:elasticloadbalancing:..." required>
+                                            <small>Blue TG ARN</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_greenTgArn">Green Target Group ARN</label>
+                                            <input type="text" id="bg_greenTgArn" placeholder="arn:aws:elasticloadbalancing:..." required>
+                                            <small>Green TG ARN</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Blue Environment -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">🔵 Blue Ortamı</h4>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="bg_blueIp">Blue Server IP</label>
+                                            <input type="text" id="bg_blueIp" placeholder="10.0.1.5" required>
+                                            <small>Blue sunucu IP adresi</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_blueInstanceId">Blue Instance ID</label>
+                                            <input type="text" id="bg_blueInstanceId" placeholder="i-0abcd1234" required>
+                                            <small>Blue EC2 Instance ID</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Green Environment -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">🟢 Green Ortamı</h4>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="bg_greenIp">Green Server IP</label>
+                                            <input type="text" id="bg_greenIp" placeholder="10.0.1.6" required>
+                                            <small>Green sunucu IP adresi</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_greenInstanceId">Green Instance ID</label>
+                                            <input type="text" id="bg_greenInstanceId" placeholder="i-0xyz98765" required>
+                                            <small>Green EC2 Instance ID</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Jenkins Credentials -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">🔑 Jenkins Credentials</h4>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="bg_dockerCreds">Docker Hub Credential ID</label>
+                                            <input type="text" id="bg_dockerCreds" value="dockerhub-credentials" required>
+                                            <small>Jenkins'teki ID</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_sshCreds">SSH Credential ID</label>
+                                            <input type="text" id="bg_sshCreds" value="deploy-server-ssh-key" required>
+                                            <small>Jenkins'teki SSH key ID</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_slackCreds">Slack Webhook Credential ID</label>
+                                            <input type="text" id="bg_slackCreds" value="slack-webhook" required>
+                                            <small>Slack webhook ID (optional)</small>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="bg_albDns">ALB DNS Name</label>
+                                            <input type="text" id="bg_albDns" placeholder="my-alb-...elb.amazonaws.com" required>
+                                            <small>ALB DNS adresi</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                            <polyline points="7 10 12 15 17 10"/>
+                                            <line x1="12" y1="15" x2="12" y2="3"/>
+                                        </svg>
+                                        Jenkinsfile Oluştur
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="resetBluegreenForm">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                            <path d="M3 3v5h5"/>
+                                        </svg>
+                                        Sıfırla
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Generated Output -->
+                            <div class="output-container" id="bg_outputContainer" style="display: none;">
+                                <div class="output-header">
+                                    <h3>Oluşturulan Blue/Green Jenkinsfile</h3>
+                                    <div class="output-actions">
+                                        <button class="btn-sm btn-copy" id="bg_copyOutput">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                            </svg>
+                                            Kopyala
+                                        </button>
+                                        <button class="btn-sm btn-download" id="bg_downloadOutput">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                <polyline points="7 10 12 15 17 10"/>
+                                                <line x1="12" y1="15" x2="12" y2="3"/>
+                                            </svg>
+                                            İndir
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="code-block" data-lang="Groovy" style="max-height: 500px; overflow-y: auto;">
+                                    <pre id="bg_generatedCode"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Jenkinsfile Reference -->
+                <section class="section" id="jenkinsfile-reference">
+                    <h2 class="section-title">
+                        <span class="number">9</span>
+                        Jenkinsfile Referansı
+                    </h2>
+                    <div class="section-content">
+                        <p>Aşağıda, projede kullanılan tam Jenkinsfile bulunmaktadır.</p>
+
+                        <div class="info-card">
+                            <div class="info-card-title">
+                                <span>📁</span>
+                                Dosya Konumu
+                            </div>
+                            <p class="info-card-content">
+                                Jenkinsfile, projenizin kök dizininde yer almalıdır.
+                            </p>
+                        </div>
+
+                        <div class="code-block" data-lang="Groovy" style="max-height: 600px; overflow-y: auto;">
+<pre><code>pipeline {
+    agent any
+
+    triggers {
+        githubPush()
+    }
+
+    environment {
+        COVERAGE_THRESHOLD = '30'
+        DOCKER_IMAGE_NAME  = 'proksiyazilimdocker/singai-api'
+        DOCKER_TAG         = "${env.BUILD_NUMBER}"
+        DOCKER_REGISTRY    = 'docker.io'
+        PYTHON_AGENT_IMAGE = 'proksiyazilimdocker/helper-python-agent-for-singai:v1.0.0-uv'
+        AWS_REGION         = 'eu-central-1'
+
+        ALB_LISTENER_ARN = sh(
+            script: "aws ssm get-parameter --name /singai/prod/alb_listener_arn --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        ALB_RULE_ARN = sh(
+            script: "aws ssm get-parameter --name /singai/prod/alb_rule_arn --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        BLUE_TG_ARN = sh(
+            script: "aws ssm get-parameter --name /singai/prod/blue_tg_arn --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        GREEN_TG_ARN = sh(
+            script: "aws ssm get-parameter --name /singai/prod/green_tg_arn --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        BLUE_SERVER_IP = sh(
+            script: "aws ssm get-parameter --name /singai/prod/blue_server_ip --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        GREEN_SERVER_IP = sh(
+            script: "aws ssm get-parameter --name /singai/prod/green_server_ip --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        ALB_DNS_NAME = sh(
+            script: "aws ssm get-parameter --name /singai/prod/alb_dns_name --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        BLUE_INSTANCE_ID = sh(
+            script: "aws ssm get-parameter --name /singai/prod/blue_instance_id --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+        GREEN_INSTANCE_ID = sh(
+            script: "aws ssm get-parameter --name /singai/prod/green_instance_id --query 'Parameter.Value' --output text",
+            returnStdout: true
+        ).trim()
+    }
+
+    options { timestamps() }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    env.GIT_COMMIT = sh(script: 'git log -1 --pretty=format:"%h (%s)"', returnStdout: true).trim()
+                    env.GIT_BRANCH = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Quality & Tests') {
+            agent { docker { image "${env.PYTHON_AGENT_IMAGE}"; args '-u root' } }
+            steps {
+                sh '''
+                    uv sync --frozen --all-extras
+                    export TESTING=1
+                    # ... dummy env vars
+                    uv run pytest tests/ --cov=app --cov-report=html:htmlcov
+                '''
+            }
+        }
+
+        stage('Coverage Check') {
+            agent { docker { image "${env.PYTHON_AGENT_IMAGE}"; args '-u root' } }
+            steps {
+                sh '''
+                    # Coverage threshold check
+                    COVERAGE=$(python -c "import xml.etree.ElementTree as ET; print(int(float(ET.parse('coverage.xml').getroot().attrib.get('line-rate', '0')) * 100))")
+                    if [ $COVERAGE -lt ${COVERAGE_THRESHOLD} ]; then exit 2; fi
+                '''
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} -t ${DOCKER_IMAGE_NAME}:latest ."
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', ...)]) {
+                    sh """
+                        echo "\$DOCKER_PASS" | docker login -u \$DOCKER_USER --password-stdin
+                        docker push ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
+                        docker push ${DOCKER_IMAGE_NAME}:latest
+                    """
+                }
+            }
+        }
+
+        stage('Deploy Blue/Green') {
+            steps {
+                script {
+                    // Determine current target
+                    def currentTarget = sh(
+                        script: "aws elbv2 describe-rules --rule-arn ${ALB_RULE_ARN} --query 'Rules[0].Actions[0].TargetGroupArn' --output text",
+                        returnStdout: true
+                    ).trim()
+
+                    def isBlueActive = (currentTarget == BLUE_TG_ARN)
+                    def targetServer = isBlueActive ? GREEN_SERVER_IP : BLUE_SERVER_IP
+                    def targetTG = isBlueActive ? GREEN_TG_ARN : BLUE_TG_ARN
+                    def targetEnv = isBlueActive ? 'GREEN' : 'BLUE'
+                    def targetInstanceId = isBlueActive ? GREEN_INSTANCE_ID : BLUE_INSTANCE_ID
+                    def currentEnv = isBlueActive ? 'BLUE' : 'GREEN'
+                    def oldInstanceId = isBlueActive ? BLUE_INSTANCE_ID : GREEN_INSTANCE_ID
+
+                    // Start target instance
+                    sh "aws ec2 start-instances --instance-ids ${targetInstanceId}"
+                    sh "aws ec2 wait instance-running --instance-ids ${targetInstanceId}"
+                    sh "aws ec2 wait instance-status-ok --instance-ids ${targetInstanceId}"
+
+                    // Deploy via SSH
+                    sh "ssh ec2-user@${targetServer} 'docker pull ... && docker run ...'"
+
+                    // Health check
+                    sleep 10
+                    for (int i = 0; i < 60; i++) {
+                        def status = sh(script: "curl -s http://${targetServer}:8001/health", returnStdout: true).trim()
+                        if (status == '200') { break }
+                        sleep 2
+                    }
+
+                    // Traffic switch
+                    sh "aws elbv2 modify-rule --rule-arn ${ALB_RULE_ARN} --actions Type=forward,TargetGroupArn=${targetTG}"
+
+                    // Alarm management
+                    sh "aws cloudwatch enable-alarm-actions --alarm-names singai-${targetEnv}-TG-*"
+                    sh "aws cloudwatch disable-alarm-actions --alarm-names singai-${currentEnv}-TG-*"
+
+                    // Stop old instance (cost saving)
+                    sh "aws ec2 stop-instances --instance-ids ${oldInstanceId}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            junit testResults: 'test-results.xml', allowEmptyResults: true
+            publishHTML(reportDir: 'htmlcov', reportName: 'Coverage Report')
+            cleanWs()
+        }
+        success {
+            echo '✅ Pipeline completed successfully!'
+            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_URL')]) {
+                script {
+                    def encodedJobName = java.net.URLEncoder.encode(env.JOB_NAME, 'UTF-8')
+                    def logGroupPath = "https://${AWS_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#logsV2:log-groups/log-group/%2Faws%2Fec2%2F${encodedJobName}"
+                    def text = "*Job:* <${BUILD_URL}|${JOB_NAME}>\\n*Build #:* ${BUILD_NUMBER}\\n*Git Branch:* ${env.GIT_BRANCH}\\n*Commit:* ${env.GIT_COMMIT}\\n*Author:* ${env.GIT_AUTHOR}\\n*Status:* SUCCESS ✅\\n*Traffic Switch:* ${env.CURRENT_ENV} → *${env.DEPLOYED_ENV}* (${env.DEPLOYED_SERVER})\\n*Access URL:* http://${env.ALB_DNS_NAME}\\n*Logs:* <${logGroupPath}|/aws/ec2/${JOB_NAME}>"
+                    def json = '{"username": "jenkins-bot", "icon_emoji": ":rocket:", "attachments": [{"color": "#36a64f", "title": "✅ Build Success", "text": "' + text + '", "footer": "Jenkins • Blue/Green Deployment", "ts": ' + (System.currentTimeMillis()/1000) + '}]}'
+
+                    sh "curl -X POST --data-urlencode 'payload=${json}' ${SLACK_URL}"
+                }
+            }
+        }
+        failure {
+            echo '❌ Pipeline failed!'
+            withCredentials([string(credentialsId: 'slack-webhook', variable: 'SLACK_URL')]) {
+                script {
+                    def encodedJobName = java.net.URLEncoder.encode(env.JOB_NAME, 'UTF-8')
+                    def logGroupPath = "https://${AWS_REGION}.console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#logsV2:log-groups/log-group/%2Faws%2Fec2%2F${encodedJobName}"
+                    def text = "*Job:* <${BUILD_URL}|${JOB_NAME}>\\n*Build #:* ${BUILD_NUMBER}\\n*Git Branch:* ${env.GIT_BRANCH}\\n*Commit:* ${env.GIT_COMMIT}\\n*Author:* ${env.GIT_AUTHOR}\\n*Status:* FAILED ❌\\n*Access URL:* http://${env.ALB_DNS_NAME}\\n*Logs:* <${logGroupPath}|/aws/ec2/${JOB_NAME}>\\nCheck Jenkins logs for details."
+                    def json = '{"username": "jenkins-bot", "icon_emoji": ":x:", "attachments": [{"color": "#ff0000", "title": "❌ Build Failed", "text": "' + text + '", "footer": "Jenkins • Blue/Green Deployment", "ts": ' + (System.currentTimeMillis()/1000) + '}]}'
+
+                    sh "curl -X POST --data-urlencode 'payload=${json}' ${SLACK_URL}"
+                }
+            }
+        }
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Troubleshooting -->
+                <section class="section" id="troubleshooting">
+                    <h2 class="section-title">
+                        <span class="number">10</span>
+                        Sorun Giderme (Troubleshooting)
+                    </h2>
+                    <div class="section-content">
+                        <div class="info-card">
+                            <div class="info-card-title">
+                                <span>⚠️</span>
+                                Karşılaşılan Hatalar ve Çözümleri
+                            </div>
+                            <p class="info-card-content">
+                                Aşağıdaki tablo, deployment sırasında karşılaşabileceğiniz yaygın hataları,
+                                nedenlerini ve çözüm önerilerini içerir.
+                            </p>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Hata Mesajı</th>
+                                        <th>Neden</th>
+                                        <th>Çözüm</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>"Aktif Target Group ARN alınamadı! null"</code></td>
+                                        <td>ALB_RULE_ARN hatalıdır veya Jenkins'in <code>elasticloadbalancing:DescribeRules</code> yetkisi yoktur.</td>
+                                        <td>SSM'deki Rule ARN'i CLI ile tekrar kontrol edin. IAM yetkilerini gözden geçirin.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>"Health check failed after ~130 seconds"</code></td>
+                                        <td>Konteyner ayağa kalkmadı veya 8001 portuna erişilemiyor.</td>
+                                        <td>Hedef sunucuda <code>docker logs myapp</code> ile hatayı görün. Security Group'ta 8001 portunun ALB'ye açık olduğundan emin olun.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>"SSH Connection Timeout"</code></td>
+                                        <td>wait instance-status-ok komutu düzgün çalışmıyor olabilir veya SSH key yanlıştır.</td>
+                                        <td>Jenkins Credentials kısmındaki SSH Key'in sunucudaki authorized_keys ile eşleştiğinden emin olun.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>"AccessDeniedException (SSM)"</code></td>
+                                        <td>Jenkins sunucusunun SSM'e erişim izni yok.</td>
+                                        <td>Jenkins IAM rolünde <code>ssm:GetParameter</code> ve <code>ssm:GetParameters</code> izinlerini kontrol edin.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>"Target group not found"</code></td>
+                                        <td>SSM parametrelerindeki TG ARN değeri yanlış.</td>
+                                        <td>EC2 > Target Groups kısmından doğru ARN'i alın ve SSM'i güncelleyin.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>"Unauthorized: image not found / pull access denied"</code></td>
+                                        <td>Docker Hub credentials hatalı veya imaj private.</td>
+                                        <td>Jenkins'teki <code>dockerhub-credentials</code> ID'sinin doğru olduğunu ve imajın erişilebilir olduğunu kontrol edin.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>"Pipeline 'Wait' aşamasında takılıyor"</code></td>
+                                        <td>Sunucu açılırken sorun yaşıyor (System Check failure).</td>
+                                        <td>AWS konsolundan EC2 > Instances > System Log'a bakın. AMI'nin düzgün yapılandırıldığından emin olun.</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>"Coverage below threshold"</code></td>
+                                        <td>Test coverage oranı %30'un altında.</td>
+                                        <td>Yazılan test sayısını artırın veya threshold değerini düşürün.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="subsection" style="margin-top: 2rem;">
+                            <h3 class="subsection-title">Hata Ayıklama İpuçları</h3>
+
+                            <div class="feature-grid">
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">🔍 AWS CloudTrail</h4>
+                                    <p class="feature-card-content">
+                                        API çağrılarını izlemek için CloudTrail'i kullanın.
+                                        Özellikle ELB ModifyRule başarısız olursa burayı kontrol edin.
+                                    </p>
+                                </div>
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">📋 Jenkins Console Output</h4>
+                                    <p class="feature-card-content">
+                                        Pipeline loglarındaki şeye odaklanın:
+                                        <code>echo "Current: BLUE → Target: GREEN"</code> çıktısı.
+                                    </p>
+                                </div>
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">🐛 Docker Logs</h4>
+                                    <p class="feature-card-content">
+                                        Hedef sunucuda <code>docker logs myapp -f --tail 100</code>
+                                        komutuyla konteyner loglarını izleyin.
+                                    </p>
+                                </div>
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">⚡ ELB Access Logs</h4>
+                                    <p class="feature-card-content">
+                                        ALB access logs'u etkinleştirin.
+                                        S3'e kaydedilen loglar ile trafiğin nereye gittiğini görün.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <footer class="footer">
+                    <p>SingAI API Blue/Green Deployment Dokümantasyonu &copy; 2025</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">
+                        Jenkins CI/CD Pipeline & AWS Infrastructure Documentation
+                    </p>
+                </footer>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTop">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
+        </svg>
+    </button>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
