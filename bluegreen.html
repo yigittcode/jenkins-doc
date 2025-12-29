@@ -338,6 +338,95 @@ aws elbv2 describe-rules --listener-arn <Listener_ARN_Buraya>
                         </div>
 
                         <div class="subsection">
+                            <h3 class="subsection-title">Docker Kurulumu ve Yetki Verme (Sunucuda Çalıştırın)</h3>
+                            <p>EC2 sunucuları oluşturulduktan sonra SSH ile bağlanıp aşağıdaki adımları uygulayın. Bu işlem <strong>hem Blue hem Green</strong> sunucuları için yapılmalıdır.</p>
+
+                            <div class="feature-grid">
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">📟 Amazon Linux 2 / 2023</h4>
+                                    <div class="feature-card-content">
+                                        <div class="code-block" data-lang="Bash">
+<pre><code># Sunucuya SSH ile bağlanın
+ssh ec2-user@<SUNUCU_IP>
+
+# Sistemi güncelleyin
+sudo yum update -y
+
+# Docker'ı kurun
+sudo yum install -y docker
+
+# Docker servisini başlatın ve otomatik başlatma ayarını yapın
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Kullanıcıyı docker grubuna ekleyin (sudo olmadan docker komutu çalıştırmak için)
+sudo usermod -aG docker ec2-user
+
+# Grup değişikliğini aktif etmek için çıkış yapıp tekrar girin
+# Veya aşağıdaki komutu çalıştırın:
+newgrp docker
+
+# Docker sürümünü kontrol edin
+docker --version</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">🐧 Ubuntu / Debian</h4>
+                                    <div class="feature-card-content">
+                                        <div class="code-block" data-lang="Bash">
+<pre><code># Sunucuya SSH ile bağlanın
+ssh ubuntu@<SUNUCU_IP>
+
+# Sistemi güncelleyin
+sudo apt-get update -y
+
+# Docker'ı kurun
+sudo apt-get install -y docker.io docker-compose
+
+# Docker servisini başlatın
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Kullanıcıyı docker grubuna ekleyin
+sudo usermod -aG docker ubuntu
+
+# Grup değişikliğini aktif etmek için
+newgrp docker
+
+# Docker sürümünü kontrol edin
+docker --version</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-card success">
+                                <div class="info-card-title">
+                                    <span>✅</span>
+                                    Doğrulama
+                                </div>
+                                <p class="info-card-content">
+                                    Docker'ın doğru kurulup kurulmadığını test etmek için:
+                                    <code>docker run hello-world</code> komutunu çalıştırın.
+                                    "Hello from Docker!" mesajını görürseniz kurulum başarılı demektir.
+                                </p>
+                            </div>
+
+                            <div class="info-card warning">
+                                <div class="info-card-title">
+                                    <span>⚠️</span>
+                                    Önemli Not
+                                </div>
+                                <p class="info-card-content">
+                                    Bu adımlar <strong>her iki sunucuya da (Blue ve Green)</strong> ayrı ayrı yapılmalıdır.
+                                    Aksi takdirde Jenkins deployment sırasında Docker komutlarını çalıştıramaz.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
                             <h3 class="subsection-title">Instance Etiketleri (Tags)</h3>
                             <div class="table-container">
                                 <table class="table">
@@ -1502,7 +1591,7 @@ sh "aws ec2 stop-instances --instance-ids ${oldInstanceId}"</code></pre>
 
                 <!-- Footer -->
                 <footer class="footer">
-                    <p>SingAI API Blue/Green Deployment Dokümantasyonu &copy; 2025</p>
+                    <p>SingAI API Blue/Green Deployment Dokümantasyonu &copy; 2026</p>
                     <p style="margin-top: 0.5rem; color: var(--text-light);">
                         Jenkins CI/CD Pipeline & AWS Infrastructure Documentation
                     </p>

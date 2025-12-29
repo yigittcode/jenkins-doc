@@ -212,7 +212,96 @@
                         </div>
 
                         <div class="subsection">
-                            <h3 class="subsection-title">B. Jenkins Credentials Tanımları</h3>
+                            <h3 class="subsection-title">B. Hedef Sunucu Docker Kurulumu</h3>
+                            <p>Jenkins'in deployment yapacağı hedef sunucuya SSH ile bağlanıp Docker'ı kurun. Bu işlem deployment yapılacak sunucuda <strong>bir kereye mahsus</strong> yapılmalıdır.</p>
+
+                            <div class="feature-grid">
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">📟 Amazon Linux 2 / 2023</h4>
+                                    <div class="feature-card-content">
+                                        <div class="code-block" data-lang="Bash">
+<pre><code># Sunucuya SSH ile bağlanın
+ssh ec2-user@<SUNUCU_IP>
+
+# Sistemi güncelleyin
+sudo yum update -y
+
+# Docker'ı kurun
+sudo yum install -y docker
+
+# Docker servisini başlatın ve otomatik başlatma ayarını yapın
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Kullanıcıyı docker grubuna ekleyin (sudo olmadan docker komutu çalıştırmak için)
+sudo usermod -aG docker ec2-user
+
+# Grup değişikliğini aktif etmek için çıkış yapıp tekrar girin
+# Veya aşağıdaki komutu çalıştırın:
+newgrp docker
+
+# Docker sürümünü kontrol edin
+docker --version</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="feature-card">
+                                    <h4 class="feature-card-title">🐧 Ubuntu / Debian</h4>
+                                    <div class="feature-card-content">
+                                        <div class="code-block" data-lang="Bash">
+<pre><code># Sunucuya SSH ile bağlanın
+ssh ubuntu@<SUNUCU_IP>
+
+# Sistemi güncelleyin
+sudo apt-get update -y
+
+# Docker'ı kurun
+sudo apt-get install -y docker.io docker-compose
+
+# Docker servisini başlatın
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Kullanıcıyı docker grubuna ekleyin
+sudo usermod -aG docker ubuntu
+
+# Grup değişikliğini aktif etmek için
+newgrp docker
+
+# Docker sürümünü kontrol edin
+docker --version</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-card success">
+                                <div class="info-card-title">
+                                    <span>✅</span>
+                                    Doğrulama
+                                </div>
+                                <p class="info-card-content">
+                                    Docker'ın doğru kurulup kurulmadığını test etmek için:
+                                    <code>docker run hello-world</code> komutunu çalıştırın.
+                                    "Hello from Docker!" mesajını görürseniz kurulum başarılı demektir.
+                                </p>
+                            </div>
+
+                            <div class="info-card warning">
+                                <div class="info-card-title">
+                                    <span>⚠️</span>
+                                    Önemli Not
+                                </div>
+                                <p class="info-card-content">
+                                    Jenkins deployment sırasında <code>docker pull</code> ve <code>docker-compose up</code>
+                                    komutlarını çalıştıracağı için kullanıcının (ec2-user veya ubuntu) docker grubunda olması zorunludur.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="subsection">
+                            <h3 class="subsection-title">C. Jenkins Credentials Tanımları</h3>
                             <p>Jenkins panelinde aşağıdaki kimlik bilgileri oluşturulmalıdır:</p>
 
                             <div class="table-container">
@@ -770,7 +859,7 @@ EOF
                         <p>Bu bölüm, sıfırdan kurulum yapacak geliştirici için kimlik doğrulama ve otomasyon adımlarını detaylandırır.</p>
 
                         <div class="subsection">
-                            <h3 class="subsection-title">A. SSH Erişiminin Ayarlanması</h3>
+                            <h3 class="subsection-title">D. SSH Erişiminin Ayarlanması</h3>
                             <p>Jenkins'in hedef sunucuya dosya atabilmesi ve komut çalıştırabilmesi için SSH Key çifti (Private/Public) gereklidir.</p>
 
                             <div class="feature-card" style="margin: 1rem 0;">
@@ -811,7 +900,7 @@ EOF
                         </div>
 
                         <div class="subsection">
-                            <h3 class="subsection-title">B. Docker Hub Kimlik Bilgileri</h3>
+                            <h3 class="subsection-title">E. Docker Hub Kimlik Bilgileri</h3>
                             <p>Jenkins'in imajları Docker Hub'a yükleyebilmesi (push) için gereklidir.</p>
 
                             <div class="feature-card" style="margin: 1rem 0;">
@@ -850,7 +939,7 @@ EOF
                         </div>
 
                         <div class="subsection">
-                            <h3 class="subsection-title">C. GitHub Webhook (Otomatik Tetikleme)</h3>
+                            <h3 class="subsection-title">F. GitHub Webhook (Otomatik Tetikleme)</h3>
                             <p>Koda push yapıldığında Jenkins'in otomatik çalışması için:</p>
 
                             <div class="feature-card" style="margin: 1rem 0;">
@@ -945,7 +1034,7 @@ EOF
 
                 <!-- Footer -->
                 <footer class="footer">
-                    <p>Yomu API Deployment Dokümantasyonu &copy; 2024</p>
+                    <p>Yomu API Deployment Dokümantasyonu &copy; 2026</p>
                     <p style="margin-top: 0.5rem; color: var(--text-light);">
                         Jenkins CI/CD Pipeline & AWS Infrastructure Documentation
                     </p>
